@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X_UA_Compatible" content="IE=edge">
+    <meta name="viewpoint" content="width=device-width, inital-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/base.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/index.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/style.css') }}">
+</head>
+
+<body class="">
+    <header>
+        <div>
+            <h4>
+                ITMD-513 Final project
+            </h4>
+            <h1 class="headerTitle">
+                Login
+            </h1>
+        </div>
+    </header>
+    <div class="panel_1">
+        <section id="form" class="calculator">
+
+            <form action="{{ url_for('login') }}" method="POST" >
+
+                <h5 style="text-align: left;
+                /* h5 in mobile show it like text-align: center;*/
+                ">
+                Welcome!
+                </h5>
+                <label for="username">username:</label>
+                <input type="text" placeholder="Username" name="username"
+                       value="{{ request.form.username }}"><br>
+                <label for="password">Password:</label>
+                <input type="password" placeholder="Password" name="password"
+                       value="{{ request.form.password }}"><br>
+                <input class="btn btn-default" type="submit" value="Login">&nbsp;&nbsp;
+                <input class="btn btn-default" type="reset" value="Clear"><br>
+
+
+                <br>
+                <p>{{ error }}</p>
+            </form>
+        <div class="container">
+        </section>
+    </div>
+    <div class="information">
+        <div>
+            <img src="{{ url_for('static',filename='images/1631458949.png') }}" alt="Missions">
+        </div>
+    </div>
+    <footer>
+        @2022 Xin Chen | xchen202@hawk.iit.edu
+    </footer>
+</body>
+</html>
+
+
+

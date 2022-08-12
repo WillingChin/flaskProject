@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="../static/css/style.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/base.css') }}/">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('statdic',filename='css/index.css') }}/">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/loader.css') }}/">
+    <title>Home</title>
+
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    {#    bootstrap#}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/dashboard.css') }}/">
+    <script>
+    $(function() {
+
+        $('input[id="datetimes"]').daterangepicker({
+            timePicker: true,
+            //startDate: moment().startOf('hour'),
+            //endDate: moment().startOf('hour').add(32, 'hour'),
+            startDate: '01-01-2019',
+            endDate: '01-01-2020',
+            locale: {
+              format: 'MM-DD-YYYY'
+            }
+        });
+        $("#search").click(search);
+
+        function search(){
+            $("#chartImage").parent().attr("style", "padding-top: 170px;");
+            $("#chartImage").attr("src", "");
+            $("#chartImage").attr("class", "loader");
+            //get all form param： the reuslt format： a=1&b=2&c=3
+            param = $('form').serialize();
+            url = "/chart_plot_image?" +param;
+            $("#chartImage").attr("src", url);
+        }
+
+
+        window.clearClass = function(){
+            //document.getElementsByClassName('loader')[0].setAttribute('class', '');
+            $("#chartImage").attr("class", "");
+            $("#chartImage").parent().attr("style", "");
+        }
+
+        function initForm(){
+            let start_latitude = $("[name='start_latitude']").val();
+            let start_longitude = $("[name='start_longitude']").val();
+            let end_latitude = $("[name='end_latitude']").val();
+            let end_longitude = $("[name='end_longitude']").val();
+
+
+            if(start_latitude == ""){
+                $("[name='start_latitude']").val("41.975121");
+            }
+            if(start_longitude == ""){
+                $("[name='start_longitude']").val("-87.791649");
+            }
+            if(end_latitude == ""){
+                $("[name='end_latitude']").val("41.978260");
+            }
+            if(end_longitude == ""){
+                $("[name='end_longitude']").val("-87.763931");
+            }
+
+            search();
+        }
+
+        initForm();
+    });
+
+
+    function displayDetailedPerfData() {
+     if (!!window.performance.getEntries) {
+      var d = loadResTimData();
+      document.getElementById('detailed_perf_data').innerHTML = "" + d + "<br>" + "<br>";
+     }
+    }
+
+    function loadResTimData() {
+     var e = window.performance.getEntries();
+     var perf_data = "<table id='table_perf_data'><thead><tr>"+
+      "<td>Resource</td><td>Network (ms)</td><td>Request (ms)</td>"+
+      "<td>Response (ms)</td></tr></thead>n<tbody>n";
+     var t = [];
+     for (var i in e) {
+      if (e[i].name == "document") {
+       // for the document refer to window.performance.timing instead,
+       // we skip it for this example
+       continue;
+      }
+      perf_data = perf_data+"<tr><td>"+e[i].name+"</td>";
+      if (e[i].requestStart==0) {
+       // resource is cached, some entries are zero,
+       // we default to fetchStart instead
+       perf_data = perf_data+"<td>"+Math.round(e[i].fetchStart-e[i].startTime)+"</td>";
+      } else {
+       perf_data = perf_data+"<td>"+Math.round(e[i].requestStart-e[i].startTime)+"</td>";
+      }
+      perf_data = perf_data+"<td>"+Math.round(e[i].responseStart-e[i].requestStart)+"</td>";
+      perf_data = perf_data+"<td>"+Math.round(e[i].responseEnd-e[i].responseStart)+"</td>";
+      perf_data = perf_data + "</tr>n";
+     }
+     perf_data = perf_data + "</tbody>n</table>n";
+     return perf_data;
+    }
+    </script>
+</head>
+<body>
+    <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+      <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">{{ session['username'] }}</a>
+      <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search"/>
+      <div class="navbar-nav">
+        <div class="nav-item text-nowrap">
+            <a  href="/logout">Sign out</a>
+        </div>
+      </div>
+    </header>
+<div class="information">
+    <h1>Crimes - 2019</h1>
+    <p>What city was very dangerous?</p>
+    <p><a target="_blank" rel="noopener noreferrer" href="https://data.cityofchicago.org/resource/w98m-zvie.json?$where=date between '2018-01-01T12:00:00' and '2020-01-16T14:00:00' AND within_box(location, 41.975121, -87.791649, 41.978260, -87.763931)">The search data for website</a></p>
+
+
+    <div>
+        <form action="" onSubmit="return false;"class="form-inline" method="get" style="float:left;">
+            <fieldset>
+                <legend>Choose crime type</legend>
+                <div style="text-align: left; padding-left:100px;">
+
+                    {% for o in crime_type %}
+                    {% if loop.index % 3 == 1 %}<div>{% endif %}
+                        <input type="checkbox" id="{{ o.item_value }}" name="crime_type" value="{{ o.item_value }}"
+                                {% if o.selected == 1 %}checked{% endif %}
+                        >
+                        <label for="{{ o.item_value }}" style="padding-right: 70px;">{{ o.item_text }}</label>
+                    {% if loop.index % 3 == 0 %}</div>{% endif %}
+                    {% endfor %}
+                </div>
+            </fieldset>
+
+            <div class="col-auto">
+                <lafbel for="chart_type">chart type: </lafbel>
+                <select placeholder="Chart Type" name="chart_type" style="width: 180px; height:37px">
+                    {% for o in chart_type_data %}
+                    <option value="{{ o.item_value }}"
+                            {% if o.selected == 1 %}selected{% endif %}
+                    >{{ o.item_text }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="date between">date between: </label>
+                <input type="text" id="datetimes" name="date_between" />
+            </div>
+
+            <div class="col-auto" style="padding-top:20px; padding-bottom: 20px;">
+                <label for="start_latitude">start latitude: </label>
+                <input type="text" class="" placeholder="start latitude" name="start_latitude"
+                       value="{{ request.form.start_latitude }}">
+                <label for="start_longitude">start longitude: </label>
+                <input type="text" class="" placeholder="start longitude" name="start_longitude"
+                       value="{{ request.form.start_longitude }}">
+            </div>
+
+            <div class="col-auto" style="padding-bottom:20px;">
+                <label for="end_latitude">end latitude: </label>
+                <input type="text" class="" placeholder="end latitude" name="end_latitude"
+                       value="{{ request.form.end_latitude }}">
+                <label for="end longitude">end longitude: </label>
+                <input type="text" class="" placeholder="end longitude" name="end_longitude"
+                       value="{{ request.form.end_longitude }}">
+            </div>
+            <div class="col-auto">
+                <input class="btn btn-primary mb-2" type="submit" id="search" value="Search">
+            </div>
+        </form>
+    </div>
+
+    <div>
+        <div>
+            <img id="chartImage" src="" alt="Image" class="loader" onload="clearClass('loader');">
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+
+
+
+
