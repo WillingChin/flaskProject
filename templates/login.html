@@ -25,9 +25,9 @@
         <section id="form" class="calculator">
 
             <form action="{{ url_for('login') }}" method="POST" >
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
                 <h5 style="text-align: left;
-                /* h5 in mobile show it like text-align: center;*/
                 ">
                 Welcome!
                 </h5>

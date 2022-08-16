@@ -1,6 +1,8 @@
 import os
 from functools import wraps
 from flask import Flask, render_template, send_file, request, session, redirect, url_for, send_from_directory
+from flask_wtf.csrf import CSRFProtect, CSRFError
+
 
 from charts import *
 
@@ -24,6 +26,7 @@ import sys
 from user_database import *
 
 app = Flask(__name__)
+csrf = CSRFProtect(app)
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -41,6 +44,27 @@ logging.debug('Flask running success.');
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+@app.errorhandler(CSRFError)
+def handle_csrf_error(e):
+    return render_template('csrf_error.html', reason=e.description), 400
+
+@app.after_request
+def apply_caching(response):
+    #XSS
+    response.headers["X-Frame-Options"] = "SAMEORIGIN"
+    response.headers["X-XSS-Protection"] = "0"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Content-Type"] = "text/html; charset=utf-8"
+
+    app.config.update(
+        SESSION_COOKIE_SECURE=True,
+        SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SAMESITE='Lax',
+    )
+
+    response.set_cookie('username', 'flask', secure=True, httponly=True, samesite='Lax')
+    return response
 
 if os.getenv("FLASK_WEB_APP_KEY") != None:
     app.secret_key = os.environ['FLASK_WEB_APP_KEY']
